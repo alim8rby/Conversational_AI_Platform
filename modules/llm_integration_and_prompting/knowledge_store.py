@@ -4,61 +4,91 @@ import os
 import json
 import pinecone
 from cohere import Client as CohereClient
-from cohere import CohereClient as CoCohereClient  # alias if needed
-from typing import List, Dict
 
-# ------------------------
-# CONFIG & INITIALIZATION
-# ------------------------
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY") or "pcsk_4sZacU_UpKYjb2sLr8p36QVFWRwNe5eg51xC8znXCx8iatJdznPzoUArhKt85y4wGUj6cY"
-PINECONE_ENV = os.getenv("PINECONE_ENV") or "us-east-1"  # e.g. "us-west1-gcp"
+# --------------------------
+# CONFIG & API KEYS (hard-coded for MVP)
+# --------------------------
+PINECONE_API_KEY = "pcsk_4sZacU_UpKYjb2sLr8p36QVFWRwNe5eg51xC8znXCx8iatJdznPzoUArhKt85y4wGUj6cY"
+PINECONE_ENV     = "us-east-1"
+COHERE_API_KEY   = "iqrvb7stR01Lv1fOhIawlBfUNGWSrIZI3W9WGDEp"
 
-# Cohere API key for embeddings
-COHERE_API_KEY = os.getenv("COHERE_API_KEY") or "iqrvb7stR01Lv1fOhIawlBfUNGWSrIZI3W9WGDEp"
-
-pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
+# --------------------------
+# INITIALIZE COHERE CLIENT
+# --------------------------
 co = CohereClient(COHERE_API_KEY)
 
-# Index names
-ICD11_INDEX = "el-consulto-icd11"
+# --------------------------
+# INITIALIZE PINECONE CLIENT (v7.x style)
+# --------------------------
+client = pinecone.Client(
+    api_key=PINECONE_API_KEY,
+    environment=PINECONE_ENV
+)
+
+# Embedding dimension for Cohere 'embed-multilingual-22' is 768
+DIMENSION = 768
+
+# Names for our two knowledge indexes
+ICD11_INDEX   = "el-consulto-icd11"
 THERAPY_INDEX = "el-consulto-therapy"
 
-# If indexes don’t exist, create them (dimension = 768 for cohere-embedding-multilingual-22)
-if ICD11_INDEX not in pinecone.list_indexes():
-    pinecone.create_index(name=ICD11_INDEX, dimension=768, metric="cosine")
-if THERAPY_INDEX not in pinecone.list_indexes():
-    pinecone.create_index(name=THERAPY_INDEX, dimension=768, metric="cosine")
+# Determine cloud/provider from PINECONE_ENV
+cloud  = "aws"
+region = PINECONE_ENV  # “us-east-1”
 
-icd11_idx = pinecone.Index(ICD11_INDEX)
-therapy_idx = pinecone.Index(THERAPY_INDEX)
+from pinecone import ServerlessSpec
+spec = ServerlessSpec(cloud=cloud, region=region)
 
+# --------------------------
+# CREATE THE INDEXES IF MISSING
+# --------------------------
+existing_indexes = client.list_indexes()
 
-# ------------------------
+if ICD11_INDEX not in existing_indexes:
+    client.create_index(
+        name=ICD11_INDEX,
+        dimension=DIMENSION,
+        metric="cosine",
+        spec=spec
+    )
+
+if THERAPY_INDEX not in existing_indexes:
+    client.create_index(
+        name=THERAPY_INDEX,
+        dimension=DIMENSION,
+        metric="cosine",
+        spec=spec
+    )
+
+# --------------------------
+# GET HANDLES TO THE INDEXES
+# --------------------------
+icd11_idx   = client.Index(ICD11_INDEX)
+therapy_idx = client.Index(THERAPY_INDEX)
+
+# --------------------------
 # EMBEDDING & UPSERT HELPERS
-# ------------------------
-def embed_text(text: str) -> List[float]:
+# --------------------------
+def embed_text(text: str) -> list[float]:
     """
-    Use a multilingual embedding model so Arabic, English, Franco-Arabic all embed
-    into the same space. We use cohere's 'embed-multilingual-22' model.
+    Use Cohere’s multilingual-22 to embed any text (English/Arabic/Franco-Arabic).
+    Returns a 768-dimensional list of floats.
     """
     resp = co.embed(model="embed-multilingual-22", texts=[text])
     return resp.embeddings[0]
 
-
 def upsert_icd11_from_json(json_path: str):
     """
-    Load ICD-11 JSON, upsert each entry as (id, embedding, metadata).
-    Metadata will include 'code', 'name', and a small 'type'.
+    Load ICD-11 JSON (list of {code, name, criteria, lay_description})
+    and upsert each entry’s 'criteria' embedding into the ICD-11 index.
     """
     with open(json_path, "r", encoding="utf-8") as f:
         icd11_list = json.load(f)
 
     vectors = []
     for entry in icd11_list:
-        # Use the ICD-11 code as the ID (e.g. "6A70-Depressive-episode")
         entry_id = f"{entry['code']}-{entry['name'].replace(' ', '-')}"
-        text_to_embed = entry["criteria"]  # or use "lay_description" whichever you prefer
-        embedding = embed_text(text_to_embed)
+        embedding = embed_text(entry["criteria"])
         meta = {
             "type": "icd11",
             "code": entry["code"],
@@ -67,16 +97,14 @@ def upsert_icd11_from_json(json_path: str):
         }
         vectors.append((entry_id, embedding, meta))
 
-    # Batch upsert (Pinecone can handle up to ~100 per batch safely)
     for i in range(0, len(vectors), 100):
         batch = vectors[i : i + 100]
         icd11_idx.upsert(vectors=batch)
 
-
 def upsert_therapy_from_json(json_path: str):
     """
-    Load therapy modalities JSON, upsert each entry as (id, embedding, metadata).
-    Metadata includes 'type' = 'therapy', 'name', maybe 'example_prompt'.
+    Load therapy modalities JSON (list of {name, description, example_prompt})
+    and upsert each entry’s 'description' embedding into the Therapy index.
     """
     with open(json_path, "r", encoding="utf-8") as f:
         therapy_list = json.load(f)
@@ -84,8 +112,7 @@ def upsert_therapy_from_json(json_path: str):
     vectors = []
     for entry in therapy_list:
         entry_id = f"THERAPY-{entry['name'].replace(' ', '-')}"
-        text_to_embed = entry["description"]
-        embedding = embed_text(text_to_embed)
+        embedding = embed_text(entry["description"])
         meta = {
             "type": "therapy",
             "name": entry["name"],
@@ -97,25 +124,33 @@ def upsert_therapy_from_json(json_path: str):
         batch = vectors[i : i + 100]
         therapy_idx.upsert(vectors=batch)
 
-
-# ------------------------
+# --------------------------
 # QUERY FUNCTIONS
-# ------------------------
-def query_icd11(query: str, top_k: int = 3) -> List[Dict]:
+# --------------------------
+def query_icd11(query: str, top_k: int = 3) -> list[dict]:
     """
-    Given a query (e.g. “I can’t sleep and feel hopeless”), embed and return
-    the top_k ICD-11 entries (list of { 'id', 'score', 'metadata' }).
-    """
-    q_vec = embed_text(query)
-    res = icd11_idx.query(queries=[q_vec], top_k=top_k, include_metadata=True)
-    return res["matches"][0]
-
-
-def query_therapy(query: str, top_k: int = 3) -> List[Dict]:
-    """
-    Given a query (e.g. “I always feel anxious”), embed and return the
-    top_k therapy modalities (list of { 'id', 'score', 'metadata' }).
+    Given a query string, embed it and return the top_k matches
+    from the ICD-11 index.
+    Returns a list of dicts: [{ 'id', 'score', 'metadata': { … } }, …].
     """
     q_vec = embed_text(query)
-    res = therapy_idx.query(queries=[q_vec], top_k=top_k, include_metadata=True)
-    return res["matches"][0]
+    response = icd11_idx.query(
+        vector=q_vec,
+        top_k=top_k,
+        include_metadata=True
+    )
+    return response.matches
+
+def query_therapy(query: str, top_k: int = 3) -> list[dict]:
+    """
+    Given a query string, embed it and return the top_k matches
+    from the Therapy index.
+    Returns a list of dicts: [{ 'id', 'score', 'metadata': { … } }, …].
+    """
+    q_vec = embed_text(query)
+    response = therapy_idx.query(
+        vector=q_vec,
+        top_k=top_k,
+        include_metadata=True
+    )
+    return response.matches
