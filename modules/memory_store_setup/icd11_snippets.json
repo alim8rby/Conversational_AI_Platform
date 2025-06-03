@@ -1,0 +1,26 @@
+[
+  {
+    "code": "6A70",
+    "name": "Depressive episode",
+    "criteria": "A. At least two weeks of depressed mood or markedly diminished interest or pleasure (anhedonia). B. Plus at least four of the following: significant weight change or appetite disturbance; sleep disturbance; psychomotor changes; fatigue or loss of energy; feeling worthless or excessive guilt; diminished ability to think or concentrate; recurrent thoughts of death or suicidal ideation.",
+    "lay_description": "لقد كنت تشعر بالحزن معظم اليوم، تقريبًا كل يوم، لمدة لا تقل عن أسبوعين. قد تفقد أيضًا الاهتمام أو المتعة في أنشطة كنت تستمتع بها سابقًا، بالإضافة إلى تغييرات في النوم أو الشهية أو الشعور بالذنب أو صعوبة التركيز."
+  },
+  {
+    "code": "6B00",
+    "name": "Generalized Anxiety Disorder",
+    "criteria": "A. Excessive anxiety and worry (apprehensive expectation) about multiple events or activities for at least six months. B. Difficulty controlling the worry. C. Associated with at least three of: restlessness, fatigue, difficulty concentrating, irritability, muscle tension, sleep disturbance.",
+    "lay_description": "لقد كنت تشعر بقلق أو توتر مفرط بشأن عدة أمور معظم أيام الأسبوع لمدة ستة أشهر أو أكثر، وليس بإمكانك التحكم في هذا القلق. قد تلاحظ توترًا جسديًا، أو تعبًا، أو صعوبة في التركيز، أو تهيجًا، أو توترًا عضليًا، أو مشكلة في النوم."
+  },
+  {
+    "code": "6B40",
+    "name": "Posttraumatic stress disorder",
+    "criteria": "A. Exposure to a traumatic event. B. Intrusive memories, flashbacks, or nightmares. C. Avoidance of reminders. D. Negative alterations in mood/cognition (e.g., memory, beliefs). E. Marked alterations in arousal or reactivity (e.g., hypervigilance, startle). Lasting more than one month.",
+    "lay_description": "لقد مررت بحدث صادم أو مهدد للحياة، والآن تستمر في إعادة تجربة هذا الحدث من خلال ذكريات متطفلة أو كوابيس، وتحاول تجنب أي شيء يذكرك بذلك. قد تشعر بانخفاض في المزاج أو في نظرتك إلى نفسك، وقد تكون دائمًا متوترًا أو سريع الاستجابة للمحفزات، وكل ذلك يدوم أكثر من شهر."
+  },
+  {
+    "code": "6C00",
+    "name": "Insomnia disorder",
+    "criteria": "A. Difficulty initiating or maintaining sleep, or early morning awakening, at least three nights per week for at least one month. B. Causes significant distress or impairment in daytime functioning (e.g., fatigue, mood disturbance).",
+    "lay_description": "لقد كنت تواجه صعوبة في النوم (إما في بدء النوم أو الحفاظ عليه) أو الاستيقاظ مبكرًا جدًا، على الأقل ثلاث ليالٍ في الأسبوع لمدة لا تقل عن شهر واحد، وهذا يؤثر على شعورك ووظيفتك خلال النهار، مثل التعب أو تغير المزاج."
+  }
+]

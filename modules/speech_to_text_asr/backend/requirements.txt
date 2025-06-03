@@ -1,0 +1,7 @@
+Flask
+transformers
+torch    # for model backend (CPU/GPU)
+soundfile
+openai   # if you choose the OpenAI API instead of HF
+fastapi
+uvicorn

@@ -1,0 +1,21 @@
+# Ignore Python virtual environments
+*.venv
+.venv/
+venv/
+*/.venv/
+*/venv/
+
+# Bytecode
+__pycache__/
+*.pyc
+
+# Node modules (if any)
+node_modules/
+
+# OS or editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Logs or temp files
+*.log
