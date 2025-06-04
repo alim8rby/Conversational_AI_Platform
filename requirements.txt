@@ -1,0 +1,28 @@
+# === Core API frameworks ===
+fastapi
+uvicorn
+python-multipart
+accelerate
+
+# === LLM integration ===
+cohere
+
+# === Vector store (Pinecone) ===
+pinecone
+
+# === Embedding models ===
+sentence-transformers
+transformers
+torch
+openai
+
+# === ASR & Audio ===
+whisper           # for Hugging Face / OpenAI Whisper inference
+soundfile           # required by many HF audio pipelines
+# (Note: Whisper will pull in torch automatically)
+
+# === Data validation & utilities ===
+pydantic
+
+# === (Optional) HTTP client, if you make downstream calls ===
+requests
