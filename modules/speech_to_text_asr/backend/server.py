@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 # This import only works if you have __init__.py files as described above:
-from app.services.asr import transcribe_audio
+from modules.speech_to_text_asr.backend.app.services.asr import transcribe_audio
 
 app = FastAPI()
 
