@@ -19,6 +19,8 @@ openai
 # === ASR & Audio ===
 whisper           # for Hugging Face / OpenAI Whisper inference
 soundfile           # required by many HF audio pipelines
+pydub
+coqui-tts
 # (Note: Whisper will pull in torch automatically)
 
 # === Data validation & utilities ===

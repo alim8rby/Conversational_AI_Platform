@@ -5,9 +5,10 @@ from cohere import ClientV2 as CohereClient    # <— Use ClientV2, not Client
 
 # Pinecone helpers
 from modules.memory_store_setup.memory_store import upsert_memory, query_memory
+from modules.memory_store_setup.knowledge_store import upsert_icd11_from_json, query_icd11, upsert_therapy_from_json, query_therapy
 
 # Language detection & normalization from Module 3
-from modules.speech_to_text_asr.backend.app.services.lang_detect import (
+from modules.language_detection_and_normalization.lang_detect import (
     detect_language,
     normalize_text,
     transliterate_franco
