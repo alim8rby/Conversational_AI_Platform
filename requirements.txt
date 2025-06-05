@@ -20,7 +20,7 @@ openai
 whisper           # for Hugging Face / OpenAI Whisper inference
 soundfile           # required by many HF audio pipelines
 pydub
-coqui-tts
+pyttsx3
 # (Note: Whisper will pull in torch automatically)
 
 # === Data validation & utilities ===
