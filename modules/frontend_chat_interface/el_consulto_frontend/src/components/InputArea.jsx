@@ -3,9 +3,13 @@
 import React, { useRef } from "react";
 import "./InputArea.css";
 
-// Use your real backend URL and port (here we assume FastAPI is on port 8001)
-const CHAT_URL = "http://localhost:8001/chat";
-const TRANSCRIBE_URL = "http://localhost:8000/transcribe";
+/// In production, use the Render backend URL. In dev, “localhost” is fine.
+const BASE_URL = import.meta.env.DEV
+  ? ""
+  : "https://el-consulto-backend.onrender.com";
+
+const CHAT_URL = `${BASE_URL}/chat`;
+const TRANSCRIBE_URL = `${BASE_URL}/transcribe`;
 
 // For now, hardcode a demo user_id. 
 // Later, when you have authentication, replace this with the actual logged-in user’s ID.
