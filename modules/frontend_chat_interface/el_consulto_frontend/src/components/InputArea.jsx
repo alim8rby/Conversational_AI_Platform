@@ -6,7 +6,7 @@ import "./InputArea.css";
 // In DEV, relative URLs will be proxied by Vite to your local FastAPI.
 // In PROD, we override BASE_URL to point at the deployed backend.
 const BASE_URL = import.meta.env.PROD
-  ? "https://el-consulto-backend.onrender.com"
+  ? "https://el-consulto-mvp-static.onrender.com/"
   : ""; // empty string means “same host/origin” in dev
 
 // Now compose full endpoints
