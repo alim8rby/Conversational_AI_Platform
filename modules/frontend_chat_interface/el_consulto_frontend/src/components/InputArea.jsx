@@ -3,12 +3,17 @@
 import React, { useRef } from "react";
 import "./InputArea.css";
 
-// Use your real backend URL and port (here we assume FastAPI is on port 8001)
-const CHAT_URL = "http://localhost:8001/chat";
-const TRANSCRIBE_URL = "http://localhost:8000/transcribe";
+// In DEV, relative URLs will be proxied by Vite to your local FastAPI.
+// In PROD, we override BASE_URL to point at the deployed backend.
+const BASE_URL = import.meta.env.PROD
+  ? "https://el-consulto-backend.onrender.com"
+  : ""; // empty string means “same host/origin” in dev
 
-// For now, hardcode a demo user_id. 
-// Later, when you have authentication, replace this with the actual logged-in user’s ID.
+// Now compose full endpoints
+const CHAT_URL = `${BASE_URL}/chat`;
+const TRANSCRIBE_URL = `${BASE_URL}/transcribe`;
+
+// For now, hardcode a demo user_id
 const USER_ID = "demo_user";
 
 export default function InputArea({
@@ -18,7 +23,6 @@ export default function InputArea({
   recognitionRef,
   audioChunksRef,
 }) {
-  // Local ref for the <input> so we can clear it after sending.
   const textInputRef = useRef("");
 
   // 1) Send a typed message to the chat backend:
@@ -32,19 +36,17 @@ export default function InputArea({
     // Clear the text box
     textInputRef.current.value = "";
 
-    // Now call the /chat endpoint and show the assistant’s reply:
+    // Call /chat endpoint and show the assistant’s reply
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Include BOTH user_id and text in the body:
         body: JSON.stringify({
           user_id: USER_ID,
           text: trimmed,
         }),
       });
 
-      // If your backend returns 422 or any error, resp.ok will be false
       if (!resp.ok) {
         console.error("Chat API returned status:", resp.status);
         addMessage(
@@ -110,7 +112,7 @@ export default function InputArea({
             addMessage("assistant", `📝 You said: "${transcript}"`);
             addMessage("user", transcript);
 
-            // Now send that transcript to /chat with both user_id and text
+            // Now send that transcript to /chat
             try {
               const chatResp = await fetch(CHAT_URL, {
                 method: "POST",
