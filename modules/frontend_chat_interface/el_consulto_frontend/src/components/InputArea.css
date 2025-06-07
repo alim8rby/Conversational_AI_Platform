@@ -1,59 +1,51 @@
 /* InputArea.css */
 
-/* slide up on mount */
+/* FIXED AT BOTTOM on mobile & desktop for consistency */
 .input-area {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom); /* respect iOS */
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 12px;
   background: var(--primary-light);
-  gap: 12px;
-  flex-shrink: 0;
-
-  opacity: 0;
-  transform: translateY(100%);
-  animation: slideInUp 0.6s ease-out forwards 0.4s;
+  gap: 8px;
+  z-index: 100; /* above chat */
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  transition: background var(--transition);
 }
 
-@keyframes slideInUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to   { transform: translateY(0);   opacity: 1; }
-}
-
-/* Text input */
+/* TEXT INPUT */
 .input-area input[type="text"] {
   flex: 1;
-  padding: 10px 16px;
+  padding: 8px 12px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #aaa;
   border-radius: 50px;
   outline: none;
   transition: border 0.2s, box-shadow 0.2s;
 }
-
 .input-area input[type="text"]:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(76,175,80,0.3);
 }
 
-/* Buttons */
+/* BUTTONS */
 .send-btn,
 .record-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 18px;
+  padding: 8px 16px;
   font-size: 1rem;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background var(--transition);
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   color: #fff;
 }
 
 .send-btn {
-  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  background: linear-gradient(135deg,#4caf50,#66bb6a);
 }
 .send-btn:hover {
   transform: translateY(-2px);
@@ -61,7 +53,7 @@
 }
 
 .record-btn {
-  background: linear-gradient(135deg, #2196f3, #42a5f5);
+  background: linear-gradient(135deg,#2196f3,#42a5f5);
 }
 .record-btn:hover {
   transform: translateY(-2px);
@@ -69,5 +61,5 @@
 }
 
 .record-btn.recording {
-  background: linear-gradient(135deg, #e53935, #ef5350);
+  background: linear-gradient(135deg,#e53935,#ef5350);
 }
