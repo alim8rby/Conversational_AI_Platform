@@ -1,9 +1,9 @@
 /* InputArea.css */
 
-/* FIXED AT BOTTOM on mobile & desktop for consistency */
+/* Fixed at bottom */
 .input-area {
   position: fixed;
-  bottom: env(safe-area-inset-bottom); /* respect iOS */
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
   display: flex;
@@ -11,12 +11,12 @@
   padding: 10px 12px;
   background: var(--primary-light);
   gap: 8px;
-  z-index: 100; /* above chat */
+  z-index: 100;
   box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
   transition: background var(--transition);
 }
 
-/* TEXT INPUT */
+/* Text input */
 .input-area input[type="text"] {
   flex: 1;
   padding: 8px 12px;
@@ -31,7 +31,7 @@
   box-shadow: 0 0 0 3px rgba(76,175,80,0.3);
 }
 
-/* BUTTONS */
+/* Send & Record buttons */
 .send-btn,
 .record-btn {
   padding: 8px 16px;

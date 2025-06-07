@@ -2,31 +2,30 @@
 
 .settings-panel {
   background: var(--gradient-settings);
-  padding: 2rem 1rem;
   color: var(--text-primary);
+  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 200px; /* match your grid column */
   animation: slideInRight 0.6s ease-out forwards 0.2s;
+  transition: background var(--transition), color var(--transition);
 }
 
-/* User avatar & name */
+/* User Info */
 .settings-panel__user {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .settings-panel__avatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%;     /* circle */
   object-fit: cover;
-  /* remove any border */
-  border: none !important;
+  border: none !important;     /* borderless */
   background: transparent !important;
+  border-radius: 50%;
   margin-bottom: 0.5rem;
 }
 
@@ -37,15 +36,15 @@
   transition: color var(--transition);
 }
 
-/* Theme toggle */
+/* Theme Toggle */
 .settings-panel__group {
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .settings-panel__group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   color: var(--text-primary);
   transition: color var(--transition);
 }
@@ -76,7 +75,7 @@
   transform: translateY(-2px);
 }
 
-/* Animations */
+/* Animation */
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0);     opacity: 1; }

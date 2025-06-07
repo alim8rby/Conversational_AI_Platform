@@ -3,77 +3,89 @@
 /* Theme & gradient vars (unchanged) */
 :root {
   --text-primary: #1f3630;
-  --gradient-sidebar: linear-gradient(135deg, #2193b0, #6dd5ed);
-  --gradient-center:  linear-gradient(135deg, #6dd5ed, #ffffff);
-  --gradient-settings:linear-gradient(135deg, #ffffff, #6dd5ed);
-  --gradient-splash:   linear-gradient(135deg, #2c3e50, #4ca1af);
-  --transition:        0.5s ease-in-out;
+  --gradient-sidebar:   linear-gradient(135deg, #2193b0, #6dd5ed);
+  --gradient-center:    linear-gradient(135deg, #6dd5ed, #ffffff);
+  --gradient-settings:  linear-gradient(135deg, #ffffff, #6dd5ed);
+  --gradient-splash:    linear-gradient(135deg, #2c3e50, #4ca1af);
+  --transition:         0.5s ease-in-out;
 }
+
 [data-theme="dark"] {
   --text-primary: #e0e0e6;
-  --gradient-sidebar: linear-gradient(135deg, #0f2027, #203a43);
-  --gradient-center:  linear-gradient(135deg, #203a43, #2c5364);
-  --gradient-settings:linear-gradient(135deg, #2c5364, #0f2027);
-  --gradient-splash:   linear-gradient(135deg, #000000, #434343);
+  --gradient-sidebar:   linear-gradient(135deg, #0f2027, #203a43);
+  --gradient-center:    linear-gradient(135deg, #203a43, #2c5364);
+  --gradient-settings:  linear-gradient(135deg, #2c5364, #0f2027);
+  --gradient-splash:    linear-gradient(135deg, #000000, #434343);
 }
 
-/* Base reset */
-* { box-sizing: border-box; margin:0; padding:0; }
+/* Reset */
+* { box-sizing:border-box; margin:0; padding:0; }
 html, body, #root { height:100%; font-family:'Inter',sans-serif; }
 
-/* APP LAYOUT */
+/* Layout */
 .app-container {
   display: grid;
   grid-template-columns: 200px 1fr 200px;
+  grid-template-rows: 1fr; /* single row by default */
   height: 100vh;
   overflow: hidden;
-  transition: grid-template-columns var(--transition);
+  transition: grid-template-columns var(--transition),
+              grid-template-rows var(--transition);
 }
 
-/* SIDEBAR & SETTINGS (desktop) */
-.sidebar { background: var(--gradient-sidebar); /*...*/ transition: background var(--transition);}
-.settings-panel { background: var(--gradient-settings); /*...*/ transition: background var(--transition);}
+/* Sidebar */
+.sidebar {
+  background: var(--gradient-sidebar);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  transition: background var(--transition), color var(--transition);
+}
 
-/* CHAT MAIN */
+/* Chat Main */
 .chat-main {
   background: var(--gradient-center);
   display: flex;
   flex-direction: column;
   transition: background var(--transition);
 }
-/* header */
+
 .chat-main__header {
-  padding: 1.5rem;
+  padding: 2rem;
 }
 .chat-main__header h1 {
   color: var(--text-primary);
   transition: color var(--transition);
+  margin: 0;
 }
 
-/* message area */
 .chat-main__log {
   flex: 1;
-  padding: 0 1rem 0; /* bottom margin handled in mobile */
+  padding: 0 2rem;
   overflow-y: auto;
   transition: padding var(--transition);
 }
 
-/* MOBILE ADAPTIVITY */
+/* Settings Panel */
+.settings-panel {
+  background: var(--gradient-settings);
+  color: var(--text-primary);
+  padding: 2rem 1rem;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* MOBILE LAYOUT: stack sidebar → chat → settings */
 @media (max-width: 800px) {
   .app-container {
-    grid-template-columns: 1fr; /* hide side panels */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
   }
-  .sidebar, .settings-panel {
-    display: none;
-  }
-
-  /* make the chat fill the viewport */
-  .chat-main {
-    height: 100vh;
-  }
-
-  /* ensure messages never hide behind fixed input */
-  .chat-main__log {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom)); 
+  .sidebar,
+  .settings-panel {
+    display: block;
+    width: 100%;
   }
 }

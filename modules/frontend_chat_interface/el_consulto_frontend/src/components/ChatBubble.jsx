@@ -1,6 +1,10 @@
 import React from "react";
 import "./ChatBubble.css";
 
+/**
+ * role: "user" or "assistant"
+ * content: text
+ */
 export default function ChatBubble({ role, content }) {
   const speaker = role === "user" ? "You" : "Assistant";
   return (
