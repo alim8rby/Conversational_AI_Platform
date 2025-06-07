@@ -1,0 +1,83 @@
+/* SettingsPanel.css */
+
+.settings-panel {
+  background: var(--gradient-settings);
+  padding: 2rem 1rem;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px; /* match your grid column */
+  animation: slideInRight 0.6s ease-out forwards 0.2s;
+}
+
+/* User avatar & name */
+.settings-panel__user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.settings-panel__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;     /* circle */
+  object-fit: cover;
+  /* remove any border */
+  border: none !important;
+  background: transparent !important;
+  margin-bottom: 0.5rem;
+}
+
+.settings-panel__name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color var(--transition);
+}
+
+/* Theme toggle */
+.settings-panel__group {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.settings-panel__group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  transition: color var(--transition);
+}
+
+.settings-panel__toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-panel__toggle button {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.3);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition), transform 0.2s;
+}
+
+.settings-panel__toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.settings-panel__toggle button:hover {
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}

@@ -13,7 +13,6 @@ export default function SplashScreen() {
         src={logo}
         alt="El Consulto Logo"
         className="splash-logo"
-        aria-hidden="true"
       />
     </div>
   );

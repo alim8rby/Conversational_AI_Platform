@@ -1,6 +1,5 @@
 /* src/index.css */
 
-/* swap in Inter, drop Orbitron */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
@@ -11,15 +10,25 @@
   --text: #e0e0e6;
   --text-alt: #1f1c2c;
   --transition: 0.3s ease-in-out;
+
+  /* Theme text var */
+  --text-primary: #1f3630;
 }
 
 [data-theme='light'] {
   --bg: #e0e0e6;
   --bg-alt: #ffffff;
-  --primary: #8a2be2;
-  --secondary: #00d2ff;
   --text: #1f1c2c;
   --text-alt: #e0e0e6;
+  --text-primary: #1f3630;
+}
+
+[data-theme='dark'] {
+  --bg: #1f1c2c;
+  --bg-alt: #272538;
+  --text: #e0e0e6;
+  --text-alt: #1f1c2c;
+  --text-primary: #e0e0e6;
 }
 
 * {
@@ -28,9 +37,7 @@
   padding: 0;
 }
 
-html,
-body,
-#root {
+html, body, #root {
   width: 100%;
   height: 100%;
   font-family: 'Inter', sans-serif;
@@ -39,4 +46,4 @@ body,
   transition: background var(--transition), color var(--transition);
 }
 
-/* ... rest of your existing index.css ... */
+/* rest of your index.css… */

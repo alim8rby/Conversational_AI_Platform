@@ -1,92 +1,78 @@
 import React, { useState, useRef, useEffect } from "react";
-import ChatBubble from "./components/ChatBubble";
-import InputArea from "./components/InputArea";
-import TypingIndicator from "./components/TypingIndicator";
 import SplashScreen from "./components/SplashScreen";
+import Sidebar from "./components/Sidebar";
+import SettingsPanel from "./components/SettingsPanel";
+import ChatBubble from "./components/ChatBubble";
+import TypingIndicator from "./components/TypingIndicator";
+import InputArea from "./components/InputArea";
 import "./App.css";
 
 export default function App() {
-  const [messages, setMessages] = useState([]);
-  const [recording, setRecording] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  // splash
   const [showSplash, setShowSplash] = useState(true);
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light")
-  );
-
-  const recognitionRef = useRef(null);
-  const audioChunksRef = useRef([]);
-  const chatWindowRef = useRef(null);
-
-  // Splash timeout
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2500);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setShowSplash(false), 2500);
+    return () => clearTimeout(t);
   }, []);
 
-  // Theme persistence
+  // theme
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Auto-scroll
+  // chat
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "Hello! I’m here to support you. What would you like to talk about?",
+    },
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatWindowRef = useRef(null);
+
+  // auto-scroll
   useEffect(() => {
     if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+      chatWindowRef.current.scrollTop =
+        chatWindowRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  const toggleTheme = () =>
-    setTheme((cur) => (cur === "light" ? "dark" : "light"));
-
-  const addMessage = (role, content) => {
+  const addMessage = (role, content) =>
     setMessages((prev) => [...prev, { role, content }]);
-  };
+
+  // show splash until ready
+  if (showSplash) return <SplashScreen />;
 
   return (
-    <>
-      {showSplash && <SplashScreen />}
+    <div className="app-container">
+      <Sidebar />
 
-      <div className="app-container">
-        <header className="chat-header">
-          <h1>El Consulto</h1>
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label="Toggle light or dark theme"
-          >
-            {theme === "light" ? "🌙" : "☀️"}
-          </button>
+      <main className="chat-main">
+        <header className="chat-main__header">
+          <h1>How can I assist you today?</h1>
         </header>
 
-        <main
-          className="chat-window"
+        <section
+          className="chat-main__log"
           ref={chatWindowRef}
           role="log"
           aria-live="polite"
-          aria-label="Chat messages"
+          aria-label="Chat conversation"
         >
-          {messages.map((msg, idx) => (
-            <ChatBubble key={idx} role={msg.role} content={msg.content} />
+          {messages.map((m, i) => (
+            <ChatBubble key={i} role={m.role} content={m.content} />
           ))}
-
-          {/* typing dots */}
           {isTyping && <TypingIndicator />}
-        </main>
+        </section>
 
-        <InputArea
-          addMessage={addMessage}
-          recording={recording}
-          setRecording={setRecording}
-          recognitionRef={recognitionRef}
-          audioChunksRef={audioChunksRef}
-          setIsTyping={setIsTyping}
-        />
-      </div>
-    </>
+        <InputArea addMessage={addMessage} setIsTyping={setIsTyping} />
+      </main>
+
+      <SettingsPanel theme={theme} setTheme={setTheme} />
+    </div>
   );
 }
