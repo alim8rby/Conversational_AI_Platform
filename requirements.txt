@@ -25,6 +25,8 @@ pyttsx3
 
 # === Data validation & utilities ===
 pydantic
+bert-score
+pytest
 
 # === (Optional) HTTP client, if you make downstream calls ===
 requests

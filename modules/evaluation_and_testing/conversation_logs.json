@@ -1,0 +1,13 @@
+[
+  {
+    "user": "I’m feeling anxious today",
+    "assistant": "I’m sorry to hear that you’re anxious. Can you tell me what’s on your mind?",
+    "reference": "I understand your worry. Let’s explore what’s causing these feelings."
+  },
+  {
+    "user": "I can’t sleep at night",
+    "assistant": "That sounds frustrating. Have you tried any relaxation techniques before bed?",
+    "reference": "Sleep issues can be tough—let’s look at your evening routine."
+  }
+  
+]
