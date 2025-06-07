@@ -14,6 +14,7 @@ export default function InputArea({
   setRecording,
   recognitionRef,
   audioChunksRef,
+  setIsTyping,      // ← new prop
 }) {
   const textInputRef = useRef("");
 
@@ -24,22 +25,29 @@ export default function InputArea({
     addMessage("user", trimmed);
     textInputRef.current.value = "";
 
+    // show typing indicator
+    setIsTyping(true);
+
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: USER_ID, text: trimmed }),
       });
+
       if (!resp.ok) {
         console.error("Chat API error:", resp.status);
-        addMessage("assistant", "⚠️ Sorry, I couldn’t process that. Please try again.");
+        addMessage("assistant", "⚠️ Sorry, I couldn’t process that.");
         return;
       }
+
       const { reply } = await resp.json();
       addMessage("assistant", reply);
     } catch (err) {
       console.error("Error calling /chat:", err);
-      addMessage("assistant", "⚠️ Couldn’t reach the server. Please try again.");
+      addMessage("assistant", "⚠️ Couldn’t reach the server.");
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -56,7 +64,7 @@ export default function InputArea({
         audioChunksRef.current = [];
 
         recorder.ondataavailable = (e) => {
-          if (e.data.size > 0) audioChunksRef.current.push(e.data);
+          if (e.data.size) audioChunksRef.current.push(e.data);
         };
 
         recorder.onstop = async () => {
@@ -74,7 +82,8 @@ export default function InputArea({
             addMessage("assistant", `📝 You said: "${transcript}"`);
             addMessage("user", transcript);
 
-            // send to chat
+            // now chat
+            setIsTyping(true);
             const chatResp = await fetch(CHAT_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -83,13 +92,15 @@ export default function InputArea({
             if (!chatResp.ok) {
               console.error("Chat API error:", chatResp.status);
               addMessage("assistant", "⚠️ Something went wrong fetching the response.");
-              return;
+            } else {
+              const { reply } = await chatResp.json();
+              addMessage("assistant", reply);
             }
-            const { reply } = await chatResp.json();
-            addMessage("assistant", reply);
           } catch (err) {
             console.error("Transcribe/chat error:", err);
             addMessage("assistant", "⚠️ Transcription failed. Please try again.");
+          } finally {
+            setIsTyping(false);
           }
 
           stream.getTracks().forEach((t) => t.stop());

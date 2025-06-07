@@ -79,3 +79,22 @@ body {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
+
+/* responsive/mobile tweaks */
+@media (max-width: 600px) {
+  .app-container {
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  .chat-header,
+  .input-area {
+    padding: 8px;
+  }
+
+  .send-btn,
+  .record-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}

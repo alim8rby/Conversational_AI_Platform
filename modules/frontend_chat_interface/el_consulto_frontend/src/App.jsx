@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import ChatBubble from "./components/ChatBubble";
 import InputArea from "./components/InputArea";
+import TypingIndicator from "./components/TypingIndicator";
 import SplashScreen from "./components/SplashScreen";
 import "./App.css";
 
 export default function App() {
   const [messages, setMessages] = useState([]);
   const [recording, setRecording] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ||
@@ -19,21 +21,24 @@ export default function App() {
   const audioChunksRef = useRef([]);
   const chatWindowRef = useRef(null);
 
+  // Splash timeout
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
+  // Theme persistence
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  // Auto-scroll
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const toggleTheme = () =>
     setTheme((cur) => (cur === "light" ? "dark" : "light"));
@@ -68,6 +73,9 @@ export default function App() {
           {messages.map((msg, idx) => (
             <ChatBubble key={idx} role={msg.role} content={msg.content} />
           ))}
+
+          {/* typing dots */}
+          {isTyping && <TypingIndicator />}
         </main>
 
         <InputArea
@@ -76,6 +84,7 @@ export default function App() {
           setRecording={setRecording}
           recognitionRef={recognitionRef}
           audioChunksRef={audioChunksRef}
+          setIsTyping={setIsTyping}
         />
       </div>
     </>

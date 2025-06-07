@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+/* src/index.css */
+
+/* swap in Inter, drop Orbitron */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #1f1c2c;
@@ -11,12 +14,12 @@
 }
 
 [data-theme='light'] {
-  --bg: #e0e06;
+  --bg: #e0e0e6;
   --bg-alt: #ffffff;
   --primary: #8a2be2;
   --secondary: #00d2ff;
   --text: #1f1c2c;
-  --text-alt: #e0e6;
+  --text-alt: #e0e0e6;
 }
 
 * {
@@ -30,69 +33,10 @@ body,
 #root {
   width: 100%;
   height: 100%;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg);
   color: var(--text);
   transition: background var(--transition), color var(--transition);
 }
 
-.chat-container {
-  max-width: 400px;
-  margin: auto;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  overflow: hidden;
-}
-
-.chat-header {
-  padding: 1rem;
-  text-align: center;
-  background: var(--bg-alt);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  list-style: none;
-}
-
-.btn,
-.voice-btn,
-.theme-toggle {
-  outline-offset: 2px;
-}
-
-.splash-screen {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  z-index: 2000;
-  animation: fadeOut 1s ease-in-out 2s forwards;
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-.splash-screen img {
-  width: 160px;
-  height: 160px;
-  animation: bubbleIn 1s ease;
-  border-radius: 50%;
-  background: transparent;
-}
-
-@keyframes bubbleIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0);  }
-}
+/* ... rest of your existing index.css ... */
