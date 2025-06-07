@@ -1,15 +1,13 @@
-/* src/components/ChatBubble.css */
+/* ChatBubble.css */
 
-/* Base bubble styling */
+/* Full-width bubbles on mobile */
 .chat-bubble {
-  max-width: 70%;
+  max-width: 90%;
+  margin: 8px auto;
   padding: 12px 16px;
-  margin: 4px 0;
   border-radius: 16px;
   line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  word-wrap: break-word;
-  /* theme-aware text color + smooth transition */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   color: var(--text-primary);
   transition: color var(--transition), background-color var(--transition);
   opacity: 0;
@@ -17,7 +15,6 @@
   animation: bubbleIn 0.4s ease-out forwards;
 }
 
-/* Entrance animation */
 @keyframes bubbleIn {
   to {
     opacity: 1;
@@ -25,19 +22,16 @@
   }
 }
 
-/* User bubble (green) */
 .user-bubble {
   background-color: var(--accent);
-  color: #fff; /* always white on accent */
+  color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
   border-bottom-left-radius: 16px;
 }
 
-/* Assistant bubble (light/dark) */
 .assistant-bubble {
   background-color: var(--primary-light);
-  /* use theme-aware text color here */
   color: var(--text-primary);
   align-self: flex-start;
   border-bottom-left-radius: 4px;

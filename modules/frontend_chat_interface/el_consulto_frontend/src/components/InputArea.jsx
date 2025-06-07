@@ -14,38 +14,26 @@ export default function InputArea({
   setRecording,
   recognitionRef,
   audioChunksRef,
-  setIsTyping,      // ← new prop
+  setIsTyping,
 }) {
   const textInputRef = useRef("");
 
   const handleSend = async () => {
     const trimmed = textInputRef.current.value.trim();
     if (!trimmed) return;
-
     addMessage("user", trimmed);
     textInputRef.current.value = "";
-
-    // show typing indicator
     setIsTyping(true);
-
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: USER_ID, text: trimmed }),
       });
-
-      if (!resp.ok) {
-        console.error("Chat API error:", resp.status);
-        addMessage("assistant", "⚠️ Sorry, I couldn’t process that.");
-        return;
-      }
-
       const { reply } = await resp.json();
       addMessage("assistant", reply);
-    } catch (err) {
-      console.error("Error calling /chat:", err);
-      addMessage("assistant", "⚠️ Couldn’t reach the server.");
+    } catch {
+      addMessage("assistant", "⚠️ Something went wrong.");
     } finally {
       setIsTyping(false);
     }
@@ -62,55 +50,40 @@ export default function InputArea({
         const recorder = new MediaRecorder(stream);
         recognitionRef.current = recorder;
         audioChunksRef.current = [];
-
         recorder.ondataavailable = (e) => {
           if (e.data.size) audioChunksRef.current.push(e.data);
         };
-
         recorder.onstop = async () => {
           setRecording(false);
-          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-          addMessage("assistant", "🎙️ Transcribing your voice…");
-
-          const formData = new FormData();
-          formData.append("file", audioBlob, "speech.webm");
-
+          const blob = new Blob(audioChunksRef.current, {type:"audio/webm"});
+          addMessage("assistant", "🎙️ Transcribing…");
+          const form = new FormData();
+          form.append("file", blob, "speech.webm");
           try {
-            const resp = await fetch(TRANSCRIBE_URL, { method: "POST", body: formData });
-            const { text } = await resp.json();
+            const tResp = await fetch(TRANSCRIBE_URL, { method: "POST", body: form });
+            const { text } = await tResp.json();
             const transcript = text.trim();
             addMessage("assistant", `📝 You said: "${transcript}"`);
             addMessage("user", transcript);
-
-            // now chat
             setIsTyping(true);
-            const chatResp = await fetch(CHAT_URL, {
+            const cResp = await fetch(CHAT_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ user_id: USER_ID, text: transcript }),
             });
-            if (!chatResp.ok) {
-              console.error("Chat API error:", chatResp.status);
-              addMessage("assistant", "⚠️ Something went wrong fetching the response.");
-            } else {
-              const { reply } = await chatResp.json();
-              addMessage("assistant", reply);
-            }
-          } catch (err) {
-            console.error("Transcribe/chat error:", err);
-            addMessage("assistant", "⚠️ Transcription failed. Please try again.");
+            const { reply } = await cResp.json();
+            addMessage("assistant", reply);
+          } catch {
+            addMessage("assistant", "⚠️ Transcription failed.");
           } finally {
             setIsTyping(false);
+            stream.getTracks().forEach((t) => t.stop());
           }
-
-          stream.getTracks().forEach((t) => t.stop());
         };
-
         recorder.start();
         setRecording(true);
-      } catch (err) {
-        console.error("Could not start microphone:", err);
-        alert("Unable to record: " + err.message);
+      } catch {
+        alert("Could not start recording.");
       }
     } else {
       recognitionRef.current?.stop();
@@ -118,44 +91,38 @@ export default function InputArea({
   };
 
   return (
-    <form
-      className="input-area"
-      role="region"
-      aria-label="Message input area"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSend();
-      }}
-    >
-      <input
-        type="text"
-        aria-label="Type your message"
-        placeholder="Type your message…"
-        ref={textInputRef}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleSend();
-          }
+    <>
+      <form
+        className="input-area"
+        role="region"
+        aria-label="Type a message"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
         }}
-      />
-
-      <button
-        type="submit"
-        className="send-btn"
-        aria-label="Send message"
       >
-        Send
-      </button>
+        <input
+          type="text"
+          placeholder="Type your message…"
+          ref={textInputRef}
+          aria-label="Message"
+        />
+        <button
+          type="submit"
+          className="send-btn"
+          aria-label="Send message"
+        >
+          Send
+        </button>
+      </form>
 
       <button
-        type="button"
-        className={`record-btn ${recording ? "recording" : ""}`}
+        className={`fab-record ${recording ? "recording" : ""}`}
         onClick={toggleRecording}
         aria-label={recording ? "Stop recording" : "Start recording"}
       >
-        {recording ? "Stop" : "Record"}
+        {recording ? "■" : "🎤"}
       </button>
-    </form>
+    </>
   );
 }

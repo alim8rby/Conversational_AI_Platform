@@ -1,6 +1,6 @@
 /* InputArea.css */
 
-/* Fixed at bottom */
+/* Fixed input bar */
 .input-area {
   position: fixed;
   bottom: env(safe-area-inset-bottom);
@@ -8,58 +8,71 @@
   right: 0;
   display: flex;
   align-items: center;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: var(--primary-light);
   gap: 8px;
-  z-index: 100;
   box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  z-index: 100;
   transition: background var(--transition);
 }
 
-/* Text input */
-.input-area input[type="text"] {
+.input-area input {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 16px;
   font-size: 1rem;
-  border: 1px solid #aaa;
+  border: 1px solid #ccc;
   border-radius: 50px;
   outline: none;
   transition: border 0.2s, box-shadow 0.2s;
 }
-.input-area input[type="text"]:focus {
+
+.input-area input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(76,175,80,0.3);
 }
 
-/* Send & Record buttons */
-.send-btn,
-.record-btn {
-  padding: 8px 16px;
+.send-btn {
+  padding: 10px 18px;
   font-size: 1rem;
   border: none;
   border-radius: 50px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background var(--transition);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg,#4caf50,#66bb6a);
   color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.send-btn {
-  background: linear-gradient(135deg,#4caf50,#66bb6a);
-}
 .send-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 8px rgba(0,0,0,0.15);
 }
 
-.record-btn {
+/* FAB record button */
+.fab-record {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 70px);
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
   background: linear-gradient(135deg,#2196f3,#42a5f5);
-}
-.record-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  color: #fff;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s, background var(--transition);
+  z-index: 101;
 }
 
-.record-btn.recording {
+.fab-record:hover {
+  transform: scale(1.1);
+}
+
+.fab-record.recording {
   background: linear-gradient(135deg,#e53935,#ef5350);
 }
