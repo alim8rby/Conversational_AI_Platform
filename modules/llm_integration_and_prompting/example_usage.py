@@ -4,7 +4,7 @@ from llm_service import LLMService
 
 if __name__ == "__main__":
     # 1) Hardcode your Cohere trial key here (no extra spaces or line breaks):
-    api_key = "iqrvb7stR01Lv1fOhIawlBfUNGWSrIZI3W9WGDEp"
+    api_key = "COHERE_API_KEY"
     # Replace "YOUR_COHERE_TRIAL_API_KEY" with your exact key from the Cohere dashboard.
 
     # 2) Instantiate LLMService for v2 Chat
