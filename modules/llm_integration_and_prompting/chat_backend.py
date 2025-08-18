@@ -13,7 +13,7 @@ app = FastAPI()
 # === PLACEHOLDER FOR YOUR COHERE API KEY ===
 # Edit the line below and replace <YOUR_COHERE_API_KEY> with your actual key.
 #
-COHERE_API_KEY = "iqrvb7stR01Lv1fOhIawlBfUNGWSrIZI3W9WGDEp"
+COHERE_API_KEY = "COHERE_API_KEY"
 
 # Instantiate the service using the key above.
 # If you ever want to pull it from an environment variable or other config,
