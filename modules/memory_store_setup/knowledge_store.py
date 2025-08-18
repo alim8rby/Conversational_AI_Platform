@@ -10,9 +10,9 @@ from cohere import Client as CohereClient
 # --------------------------
 # CONFIG & API KEYS (hard‐coded for MVP)
 # --------------------------
-PINECONE_API_KEY = "pcsk_4sZacU_UpKYjb2sLr8p36QVFWRwNe5eg51xC8znXCx8iatJdznPzoUArhKt85y4wGUj6cY"
+PINECONE_API_KEY = "PINECONE_API_KEY"
 PINECONE_ENV     = "us-east-1"
-COHERE_API_KEY   = "iqrvb7stR01Lv1fOhIawlBfUNGWSrIZI3W9WGDEp"
+COHERE_API_KEY   = "COHERE_API_KEY"
 
 # --------------------------
 # INITIALIZE COHERE CLIENT
