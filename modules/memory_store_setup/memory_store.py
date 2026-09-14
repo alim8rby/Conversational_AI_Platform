@@ -1,68 +1,46 @@
-from pinecone import Pinecone, ServerlessSpec   # you tried this, but `Client` was missing
+import os
+
+from pinecone import Pinecone, ServerlessSpec
 from pinecone.exceptions import PineconeApiException
 from sentence_transformers import SentenceTransformer
-import time
 
-PINECONE_API_KEY = "PINECONE_API_KEY"
-PINECONE_ENV     = "us-east-1"
-INDEX_NAME       = "el-consulto-memory"
-VECTOR_DIM       = 512
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV", "us-east-1")
+INDEX_NAME = os.getenv("MEMORY_INDEX", "conversation-memory")
 
-# You originally wrote:
-# client = pinecone.Client(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
-# but v7.0.2 no longer exposes `Client`.
+if not PINECONE_API_KEY:
+    raise RuntimeError("Vector database configuration is missing")
 
-# Instead, do:
-pc = Pinecone(
-    api_key=PINECONE_API_KEY,
-    environment=PINECONE_ENV
-)
+pc = Pinecone(api_key=PINECONE_API_KEY)
 
-# Determine cloud/region from PINECONE_ENV:
-# For “us-east-1” (AWS), set cloud="aws", region="us-east-1"
-spec = ServerlessSpec(
-    cloud="aws",
-    region=PINECONE_ENV
-)
-
-# Create index if not exists
 try:
     pc.create_index(
         name=INDEX_NAME,
-        dimension=VECTOR_DIM,
+        dimension=512,
         metric="cosine",
-        spec=spec
+        spec=ServerlessSpec(cloud="aws", region=PINECONE_ENV),
     )
-except PineconeApiException as e:
-    # If the index already exists, skip; otherwise re‐raise
-    if e.status != 409:
+except PineconeApiException as exc:
+    if exc.status != 409:
         raise
 
-# Get a handle to the index
 index = pc.Index(INDEX_NAME)
+model = SentenceTransformer("sentence-transformers/distiluse-base-multilingual-cased-v1")
 
-# Print dimension to confirm setup
-desc = pc.describe_index(INDEX_NAME)
-print(f"🔥 Index '{INDEX_NAME}' dimension is: {desc.dimension}")
-
-# Load multilingual embedding model
-model = SentenceTransformer(
-    "sentence-transformers/distiluse-base-multilingual-cased-v1"
-)
 
 def embed_text(text: str) -> list[float]:
-    vec = model.encode(text, normalize_embeddings=True)
-    return vec.tolist()
+    vector = model.encode(text, normalize_embeddings=True)
+    return vector.tolist()
 
-def upsert_memory(id: str, text: str, metadata: dict = None):
-    embedding = embed_text(text)
-    index.upsert(vectors=[(id, embedding, metadata or {})])
+
+def upsert_memory(id: str, text: str, metadata: dict | None = None):
+    index.upsert(vectors=[(id, embed_text(text), metadata or {})])
+
 
 def query_memory(query: str, top_k: int = 5) -> list[dict]:
-    q_vec = embed_text(query)
     response = index.query(
-        vector=q_vec,
+        vector=embed_text(query),
         top_k=top_k,
-        include_metadata=True
+        include_metadata=True,
     )
     return response.matches
