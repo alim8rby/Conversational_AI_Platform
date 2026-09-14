@@ -1,9 +1,7 @@
 import React, { useRef } from "react";
 import "./InputArea.css";
 
-const BASE_URL = import.meta.env.DEV
-  ? ""
-  : "https://el-consulto-backend.onrender.com";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "";
 const CHAT_URL = `${BASE_URL}/chat`;
 const TRANSCRIBE_URL = `${BASE_URL}/transcribe`;
 const USER_ID = "demo_user";
@@ -30,10 +28,11 @@ export default function InputArea({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: USER_ID, text: trimmed }),
       });
+      if (!resp.ok) throw new Error("Chat request failed");
       const { reply } = await resp.json();
       addMessage("assistant", reply);
     } catch {
-      addMessage("assistant", "⚠️ Something went wrong.");
+      addMessage("assistant", "Something went wrong. Please try again.");
     } finally {
       setIsTyping(false);
     }
@@ -55,15 +54,17 @@ export default function InputArea({
         };
         recorder.onstop = async () => {
           setRecording(false);
-          const blob = new Blob(audioChunksRef.current, {type:"audio/webm"});
-          addMessage("assistant", "🎙️ Transcribing…");
+          const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          addMessage("assistant", "Transcribing…");
           const form = new FormData();
           form.append("file", blob, "speech.webm");
           try {
             const tResp = await fetch(TRANSCRIBE_URL, { method: "POST", body: form });
+            if (!tResp.ok) throw new Error("Transcription failed");
             const { text } = await tResp.json();
-            const transcript = text.trim();
-            addMessage("assistant", `📝 You said: "${transcript}"`);
+            const transcript = (text || "").trim();
+            if (!transcript) throw new Error("Empty transcription");
+            addMessage("assistant", `You said: "${transcript}"`);
             addMessage("user", transcript);
             setIsTyping(true);
             const cResp = await fetch(CHAT_URL, {
@@ -71,13 +72,14 @@ export default function InputArea({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ user_id: USER_ID, text: transcript }),
             });
+            if (!cResp.ok) throw new Error("Chat request failed");
             const { reply } = await cResp.json();
             addMessage("assistant", reply);
           } catch {
-            addMessage("assistant", "⚠️ Transcription failed.");
+            addMessage("assistant", "Audio processing failed. Please try again.");
           } finally {
             setIsTyping(false);
-            stream.getTracks().forEach((t) => t.stop());
+            stream.getTracks().forEach((track) => track.stop());
           }
         };
         recorder.start();
@@ -101,17 +103,8 @@ export default function InputArea({
           handleSend();
         }}
       >
-        <input
-          type="text"
-          placeholder="Type your message…"
-          ref={textInputRef}
-          aria-label="Message"
-        />
-        <button
-          type="submit"
-          className="send-btn"
-          aria-label="Send message"
-        >
+        <input type="text" placeholder="Type your message…" ref={textInputRef} aria-label="Message" />
+        <button type="submit" className="send-btn" aria-label="Send message">
           Send
         </button>
       </form>
