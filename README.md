@@ -17,7 +17,7 @@ A full-stack conversational AI platform combining LLM-powered dialogue, multilin
 React / Vite Client
         │
         ▼
-     FastAPI
+     FastAPI API
         │
         ▼
 Conversation Service
@@ -70,23 +70,26 @@ npm run dev
 
 ## Configuration
 
-The application uses environment variables for external services and deployment-specific values. No API credentials should be committed to the repository.
+Deployment-specific values and external service credentials are supplied through environment variables. API credentials are intentionally excluded from version control.
+
+See `.env.example` for the available configuration variables.
 
 ## Evaluation
 
-The project includes automated components for conversational quality and safety evaluation. The evaluation layer is designed to evolve toward reproducible regression testing, retrieval metrics, latency measurement, and multilingual quality checks.
+The repository includes components for conversational quality and safety evaluation. The evaluation layer is intended to support reproducible regression testing, retrieval-quality metrics, latency benchmarks, and multilingual quality checks.
 
 ## Engineering Focus
 
-The project demonstrates separation of concerns across API integration, conversation orchestration, language processing, vector retrieval, speech processing, frontend interaction, and evaluation. It is intended as an engineering portfolio project and experimental conversational AI platform rather than a production service.
+The project demonstrates separation of concerns across API integration, conversation orchestration, language processing, vector retrieval, speech processing, frontend interaction, evaluation, and CI.
 
-## Roadmap
+It is an engineering portfolio project and experimental conversational AI platform rather than a production service.
+
+## Next Improvements
 
 - Centralize application configuration and dependency injection
 - Add structured logging and observability
-- Expand automated tests and mocked integration tests
+- Expand automated unit and integration tests
 - Add retrieval-quality and latency benchmarks
-- Add CI for testing and linting
 - Remove remaining legacy branding from internal paths
 
 ## License
