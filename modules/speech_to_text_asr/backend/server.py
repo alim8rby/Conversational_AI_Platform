@@ -1,36 +1,40 @@
-# modules/speech-to-text-asr/backend/server.py
+import os
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-# This import only works if you have __init__.py files as described above:
 from modules.speech_to_text_asr.backend.app.services.asr import transcribe_audio
 
-app = FastAPI()
+app = FastAPI(title="Speech-to-Text API")
 
-# Allow all origins for development
+origins = [
+    origin.strip()
+    for origin in os.getenv("FRONTEND_ORIGINS", "http://localhost:5173").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["*"]
 )
+
 
 @app.post("/transcribe")
 async def transcribe_endpoint(file: UploadFile = File(...)):
-    """
-    Expects a multipart/form-data upload with a 'file' field.
-    Returns JSON { "text": "the transcription" } or { "error": "<message>" }.
-    """
     audio_bytes = await file.read()
+    if not audio_bytes:
+        raise HTTPException(status_code=400, detail="Audio file is empty")
+
     try:
         transcript = transcribe_audio(audio_bytes)
         return {"text": transcript}
-    except Exception as e:
-        # Print to the server console for debugging
-        print("ASR error:", e)
-        return {"error": str(e)}
+    except Exception as exc:
+        print(f"ASR error: {exc}")
+        raise HTTPException(status_code=500, detail="Transcription service unavailable") from exc
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
