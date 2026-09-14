@@ -1,12 +1,12 @@
-import React from 'react';
-import logo from '../assets/logo.png';
-import './Sidebar.css';
+import React from "react";
+import logo from "../assets/logo.png";
+import "./Sidebar.css";
 
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <img src={logo} alt="El Consulto Logo" className="sidebar__logo" />
-      <h2 className="sidebar__title">الكُونْسُلْتُو<br/>EL CONSULTO</h2>
+      <img src={logo} alt="Conversational AI Platform logo" className="sidebar__logo" />
+      <h2 className="sidebar__title">CONVERSATIONAL<br />AI</h2>
     </aside>
   );
 }
