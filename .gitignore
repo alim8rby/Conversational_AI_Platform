@@ -1,21 +1,27 @@
-# Ignore Python virtual environments
-*.venv
+# Python
 .venv/
 venv/
-*/.venv/
-*/venv/
+**/__pycache__/
+*.py[cod]
 
-# Bytecode
-__pycache__/
-*.pyc
+# Environment files
+.env
+.env.*
+!.env.example
 
-# Node modules (if any)
-node_modules/
+# Logs
+*.log
 
-# OS or editor files
+# Node
+**/node_modules/
+**/dist/
+
+# OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
 
-# Logs or temp files
-*.log
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
