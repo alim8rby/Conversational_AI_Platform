@@ -1,4 +1,7 @@
 # Architecture
 
-This document is the architectural home for the repository. It follows the frozen portfolio framework: product → UX → system architecture → data architecture → AI architecture → evaluation → integration → testing → deployment.
+## Target architecture
+Clients → API Gateway → Conversation Services → Model/Prompt/Memory Providers → Persistence → Evaluation/Observability.
 
+## Platform principle
+Separate reusable platform interfaces from provider-specific implementations so models, prompts, memory backends, and consumers can evolve independently.
