@@ -8,52 +8,50 @@ import InputArea from "./components/InputArea";
 import "./App.css";
 
 export default function App() {
-  // splash
   const [showSplash, setShowSplash] = useState(true);
   useEffect(() => {
-    const t = setTimeout(() => setShowSplash(false), 2500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setShowSplash(false), 2500);
+    return () => clearTimeout(timer);
   }, []);
 
-  // theme
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // chat
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content:
-        "Hello! I’m here to support you. What would you like to talk about?",
+      content: "Hello! I’m here to support you. What would you like to talk about?",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [recording, setRecording] = useState(false);
   const chatWindowRef = useRef(null);
+  const recorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
-  // auto-scroll
   useEffect(() => {
     if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop =
-        chatWindowRef.current.scrollHeight;
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
   const addMessage = (role, content) =>
-    setMessages((prev) => [...prev, { role, content }]);
+    setMessages((previous) => [...previous, { role, content }]);
 
-  // show splash until ready
   if (showSplash) return <SplashScreen />;
 
   return (
     <div className="app-container">
       <Sidebar />
-
       <main className="chat-main">
         <header className="chat-main__header">
           <h1>How can I assist you today?</h1>
+          <p className="portfolio-notice">
+            Portfolio demonstration only — not medical advice or emergency support.
+          </p>
         </header>
 
         <section
@@ -63,15 +61,21 @@ export default function App() {
           aria-live="polite"
           aria-label="Chat conversation"
         >
-          {messages.map((m, i) => (
-            <ChatBubble key={i} role={m.role} content={m.content} />
+          {messages.map((message, index) => (
+            <ChatBubble key={index} role={message.role} content={message.content} />
           ))}
           {isTyping && <TypingIndicator />}
         </section>
 
-        <InputArea addMessage={addMessage} setIsTyping={setIsTyping} />
+        <InputArea
+          addMessage={addMessage}
+          recording={recording}
+          setRecording={setRecording}
+          recognitionRef={recorderRef}
+          audioChunksRef={audioChunksRef}
+          setIsTyping={setIsTyping}
+        />
       </main>
-
       <SettingsPanel theme={theme} setTheme={setTheme} />
     </div>
   );

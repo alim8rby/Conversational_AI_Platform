@@ -1,8 +1,7 @@
-import os
-
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from modules.config import get_settings
 from modules.speech_to_text_asr.backend.server import transcribe_endpoint as _transcribe_logic
 from modules.llm_integration_and_prompting.chat_backend import (
     ChatRequest,
@@ -10,22 +9,15 @@ from modules.llm_integration_and_prompting.chat_backend import (
     chat_endpoint as _chat_logic,
 )
 
+settings = get_settings()
 app = FastAPI(title="Conversational AI Platform API")
-
-origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-    ).split(",")
-    if origin.strip()
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=settings.frontend_origins,
+    allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -37,27 +29,24 @@ async def transcribe_endpoint(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as exc:
-        print(f"ASR service error: {exc}")
         raise HTTPException(status_code=500, detail="Speech-to-text service unavailable") from exc
 
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(req: ChatRequest):
     """Proxy to the conversational AI service."""
-    try:
-        return await _chat_logic(req)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        print(f"Chat service error: {exc}")
-        raise HTTPException(status_code=500, detail="Conversational AI service unavailable") from exc
+    return await _chat_logic(req)
 
 
 @app.get("/ping")
 async def ping():
-    return {"status": "ok"}
+    return {"status": "ok", "mode": "portfolio-demo"}
 
 
 @app.get("/")
 async def root():
-    return {"status": "ok", "service": "Conversational AI Platform API"}
+    return {
+        "status": "ok",
+        "service": "Conversational AI Platform API",
+        "notice": "Portfolio demonstration; not medical advice.",
+    }
