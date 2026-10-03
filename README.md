@@ -1,97 +1,127 @@
 # Conversational AI Platform
 
-A full-stack conversational AI platform combining LLM-powered dialogue, multilingual processing, semantic memory, speech-to-text, and automated evaluation.
+A portfolio project that demonstrates a full-stack, multilingual conversational-AI experience. It combines a React/Vite client, FastAPI API, Cohere-powered responses, session-scoped vector memory, speech-to-text, and lightweight evaluation utilities.
 
-## Highlights
+> **Portfolio demonstration only.** This repository is not a medical product, is not emergency support, and must not be used for clinical diagnosis, treatment, or high-stakes advice.
 
-- **LLM dialogue** — Cohere-powered conversational generation with configurable prompts.
-- **Semantic memory** — Pinecone vector retrieval for context-aware conversations.
-- **Multilingual interaction** — English, Arabic, and Franco-Arabic detection and normalization.
-- **Voice input** — Audio transcription through an ASR pipeline.
-- **Evaluation** — Coherence, empathy, and safety evaluation components.
-- **Web interface** — React/Vite client connected to a FastAPI backend.
+## Why this project
+
+This project demonstrates practical AI-application engineering across a complete user flow:
+
+- React/Vite chat interface with light/dark themes and microphone input
+- FastAPI endpoints for chat and transcription
+- English, Arabic, and Franco-Arabic normalization
+- Cohere model integration with session-scoped Pinecone memory
+- Whisper-based speech transcription
+- Basic conversation-quality and safety-evaluation starting points
+- GitHub Actions checks for backend tests and frontend lint/build
 
 ## Architecture
 
-```text
-React / Vite Client
-        │
-        ▼
-     FastAPI API
-        │
-        ▼
-Conversation Service
-   ┌────┼──────────────┐
-   ▼    ▼              ▼
-  LLM  Memory          ASR
-   │    │              │
-Cohere Pinecone     Speech Model
-        │
-        ▼
-   Evaluation
-```
+~~~text
+React / Vite client
+  ├─ browser-local session identifier
+  ├─ text chat
+  └─ audio capture
+          │
+          ▼
+FastAPI API
+  ├─ /chat → language normalization → Cohere → optional session memory
+  └─ /transcribe → validated audio upload → Whisper
+~~~
 
-## Repository Structure
+Memory is partitioned by the browser-local demo session. This keeps the demo’s conversations separate; it is not a replacement for a production authentication and privacy system.
 
-```text
-modules/
-├── backend_integration_and_deployment/
-├── evaluation_and_testing/
-├── frontend_chat_interface/
-├── language_detection_and_normalization/
-├── llm_integration_and_prompting/
-├── memory_store_setup/
-└── speech_to_text_asr/
-```
+## Quick start
 
-## Running Locally
+### Prerequisites
+
+- Python 3.11+
+- Node.js 20+
+- Cohere API key for chat
+- Pinecone API key for optional persistent memory
 
 ### Backend
 
-```bash
+~~~bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
-
-Create a `.env` file from `.env.example` and provide the required service credentials.
-
-```bash
+cp .env.example .env
 uvicorn modules.backend_integration_and_deployment.app:app --reload
-```
+~~~
+
+The API starts without provider credentials so health and input-validation endpoints can be tested. Set COHERE_API_KEY before sending chat requests. Pinecone is optional: if it is unavailable, chat continues without remembered context.
 
 ### Frontend
 
-```bash
+~~~bash
 cd modules/frontend_chat_interface/el_consulto_frontend
-npm install
+npm ci
 npm run dev
-```
+~~~
+
+Set VITE_BACKEND_URL=http://localhost:8000 in the frontend environment when the frontend is served from a different origin.
 
 ## Configuration
 
-Deployment-specific values and external service credentials are supplied through environment variables. API credentials are intentionally excluded from version control.
+Copy .env.example to .env.
 
-See `.env.example` for the available configuration variables.
+| Variable | Purpose |
+|---|---|
+| COHERE_API_KEY | Enables the chat provider |
+| PINECONE_API_KEY | Enables optional semantic memory |
+| PINECONE_ENV | Pinecone serverless region |
+| MEMORY_INDEX | Conversation-memory index name |
+| LLM_MODEL | Cohere model name; defaults to command-r |
+| MEMORY_TOP_K | Number of memories retrieved per message |
+| MAX_MESSAGE_CHARS | Input length bound; defaults to 2,000 |
+| MAX_UPLOAD_BYTES | Audio upload bound; defaults to 10 MiB |
+| FRONTEND_ORIGINS | Comma-separated allowed local frontend origins |
 
-## Evaluation
+Never commit a real .env file.
 
-The repository includes components for conversational quality and safety evaluation. The evaluation layer is intended to support reproducible regression testing, retrieval-quality metrics, latency benchmarks, and multilingual quality checks.
+## Tests and quality checks
 
-## Engineering Focus
+~~~bash
+# Backend API and session-memory tests
+pytest -q modules/evaluation_and_testing/tests
 
-The project demonstrates separation of concerns across API integration, conversation orchestration, language processing, vector retrieval, speech processing, frontend interaction, evaluation, and CI.
+# Frontend
+cd modules/frontend_chat_interface/el_consulto_frontend
+npm run lint
+npm run build
+~~~
 
-It is an engineering portfolio project and experimental conversational AI platform rather than a production service.
+GitHub Actions runs these backend checks plus frontend lint/build on pull requests and the portfolio-polish branch.
 
-## Next Improvements
+## Repository map
 
-- Centralize application configuration and dependency injection
-- Add structured logging and observability
-- Expand automated unit and integration tests
-- Add retrieval-quality and latency benchmarks
-- Remove remaining legacy branding from internal paths
+~~~text
+modules/
+├── backend_integration_and_deployment/   # FastAPI application facade
+├── evaluation_and_testing/               # API, memory, and evaluation checks
+├── frontend_chat_interface/              # React/Vite client
+├── language_detection_and_normalization/ # English/Arabic/Franco-Arabic helpers
+├── llm_integration_and_prompting/        # Cohere orchestration
+├── memory_store_setup/                   # Pinecone memory and knowledge helpers
+└── speech_to_text_asr/                   # Whisper transcription
+~~~
+
+## Design decisions and limitations
+
+This intentionally remains a compact portfolio project rather than a production platform. It does **not** implement user accounts, production-grade authorization, formal clinical safety review, data-retention controls, rate limiting, operational monitoring, or a full evaluation pipeline. Those are sensible future extensions, not claims this project makes today.
+
+The knowledge scripts contain experimental mental-health-related examples solely to demonstrate retrieval plumbing. They are not medical content, professional guidance, or a substitute for qualified care.
+
+## Next steps
+
+- Add a version-pinned Python lockfile and dependency scan
+- Expand multilingual regression and retrieval-quality evaluation
+- Add screenshots or a short demo video to this README
+- Containerize the local development workflow
+- Add authenticated users only if the project scope grows beyond a portfolio demo
 
 ## License
 
-No open-source license is currently specified.
+No license has been selected yet. Add one before redistributing or accepting external contributions.
