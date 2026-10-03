@@ -21,7 +21,7 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q modules scripts
       - name: Run API and memory tests
-        run: pytest -q modules/evaluation_and_testing/tests
+        run: PYTHONPATH=. pytest -q modules/evaluation_and_testing/tests
 
   frontend-checks:
     runs-on: ubuntu-latest
